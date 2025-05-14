@@ -1,0 +1,12 @@
+{
+    "dataset": "SALLM",
+    "platform": "Ollama",
+    "model": "mistral:latest",
+    "model_id": "mistral",
+    "sample_amount": 1,
+    "temperature": 0.0,
+    "rci": 0,
+    "rci_variant": "security",
+    "cot": false,
+    "output_dir": "generation/generated_code/SALLM/mistral/C0"
+}

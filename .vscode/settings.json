@@ -1,0 +1,10 @@
+{
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "prettier.tabWidth": 4,
+    "python.testing.pytestArgs": ["__tests__"],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
