@@ -5,8 +5,8 @@
     "model_id": "mistral",
     "sample_amount": 1,
     "temperature": 0.0,
-    "rci": 0,
-    "rci_variant": "security",
+    "rci": 1,
+    "rci_variant": "energy-efficiency",
     "cot": false,
-    "output_dir": "generation/generated_code/SALLM/mistral/C0"
+    "output_dir": "generation/generated_code/SALLM/mistral/C9"
 }
