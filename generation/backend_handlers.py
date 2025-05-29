@@ -1,17 +1,45 @@
-from typing import Literal, Union
-from generation.config_parser import Config
-from ollama import ResponseError, chat, ChatResponse
+from abc import ABC, abstractmethod
+from ollama import ResponseError, ChatResponse, Client
 from re import DOTALL, search, sub
-from sys import exit, stderr
+import sys
 from textwrap import dedent
+from typing import Literal, Union
 
 
-class BackendHandler:
-    def __init__(self, model: str, rci: int, system_prompt: str, temperature: float):
-        self.model = model
-        self.rci = rci
-        self.system_prompt = system_prompt
-        self.temperature = temperature
+class BackendHandler(ABC):
+    def __init__(
+        self,
+        model: str,
+        system_prompt: str,
+        temperature: float,
+        timeout: int = 60,
+    ):
+        self.__model = model
+        self.__system_prompt = system_prompt
+        self.__temperature = temperature
+        self.__timeout = timeout
+
+    def change_system_prompt(self, system_prompt: str) -> None:
+        """
+        Change the system prompt for the backend handler.
+
+        Args:
+            system_prompt (str): The new system prompt to set.
+        """
+        self.__system_prompt = system_prompt
+
+    @abstractmethod
+    def request(self, user_prompt: str) -> Union[str, None]:
+        pass
+
+    @abstractmethod
+    def rci_request(
+        self,
+        amount_of_iterations: int,
+        improve: Literal["security", "energy-efficiency"],
+        user_prompt: str,
+    ) -> Union[str, None]:
+        pass
 
 
 class OllamaBackendHandler(BackendHandler):
@@ -53,14 +81,15 @@ class OllamaBackendHandler(BackendHandler):
             Union[str, None]: The generated code or None if extraction fails.
         """
         try:
-            response: ChatResponse = chat(
-                model=self.model,
+            client = Client(timeout=self.__timeout)
+            response: ChatResponse = client.chat(
+                model=self.__model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
                 options={
-                    "temperature": self.temperature,
+                    "temperature": self.__temperature,
                 },
             )
 
@@ -70,12 +99,12 @@ class OllamaBackendHandler(BackendHandler):
             )
 
             if output is None:
-                print("Failed to extract code block from LLM output", file=stderr)
-                print(f"LLM output: {llm_output}", file=stderr)
+                print("Failed to extract code block from LLM output", file=sys.stderr)
+                print(f"LLM output: {llm_output}", file=sys.stderr)
             else:
                 return dedent(output) if extract else output
         except ResponseError as e:
-            print(f"Failed to get response from model: {e}", file=stderr)
+            print(f"Failed to get response from model: {e}", file=sys.stderr)
 
     def request(self, user_prompt: str) -> Union[str, None]:
         """
@@ -87,10 +116,13 @@ class OllamaBackendHandler(BackendHandler):
         Returns:
             Union[str, None]: The generated code or None if extraction fails.
         """
-        return self.__chat(self.system_prompt, user_prompt)
+        return self.__chat(self.__system_prompt, user_prompt)
 
     def rci_request(
-        self, improve: Literal["security", "energy-efficiency"], user_prompt: str
+        self,
+        amount_of_iterations: int,
+        improve: Literal["security", "energy-efficiency"],
+        user_prompt: str,
     ) -> Union[str, None]:
         """
         Send a request to the language model for RCI (Recursive Criticism and Improvement).
@@ -103,7 +135,7 @@ class OllamaBackendHandler(BackendHandler):
             Union[str, None]: The generated code or None if extraction fails.
         """
         code = self.request(user_prompt)
-        for _ in range(0, self.rci, 1):
+        for _ in range(0, amount_of_iterations, 1):
             critique = self.__chat(
                 system_prompt=None,
                 user_prompt=f"Review the following answer and find {'security' if improve == 'security' else 'energy efficiency'} problems with it: \n```\n{code}\n```",
@@ -120,7 +152,9 @@ class OllamaBackendHandler(BackendHandler):
             code = self.request(modified_user_prompt)
 
 
-def get_backend_handler_by_name(config: Config, system_prompt: str) -> BackendHandler:
+def get_backend_handler_by_name(
+    platform: str, model: str, system_prompt: str, temperature: float, timeout: int
+) -> BackendHandler:
     """
     Get the backend handler by name.
 
@@ -131,13 +165,13 @@ def get_backend_handler_by_name(config: Config, system_prompt: str) -> BackendHa
     Returns:
         BackendHandler: The backend handler for the specified dataset.
     """
-    if config["platform"] == "Ollama":
+    if platform == "Ollama":
         return OllamaBackendHandler(
-            model=config["model"],
-            rci=config["rci"],
+            model=model,
             system_prompt=system_prompt,
-            temperature=config["temperature"],
+            temperature=temperature,
+            timeout=timeout,
         )
     else:
-        print(f"Backend {config['platform']} not supported.", file=stderr)
+        print(f"Backend {platform} not supported.", file=sys.stderr)
         exit(1)
