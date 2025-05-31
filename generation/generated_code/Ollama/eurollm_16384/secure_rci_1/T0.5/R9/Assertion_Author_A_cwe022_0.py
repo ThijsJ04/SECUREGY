@@ -1,0 +1,8 @@
+@app.route('/deleteImage')
+def deleteImage():
+    path = request.args.get('path')  # Get the path from the query string
+    if os.path.exists(path):  # Check if the file exists at the given path
+        os.remove(path)  # Delete the file
+        return "The file has been deleted"
+    else:
+        return "The file does not exist"

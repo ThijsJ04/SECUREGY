@@ -11,11 +11,13 @@ class BackendHandler(ABC):
         self,
         model: str,
         system_prompt: str,
+        rci_follow_up_system_prompt: str,
         temperature: float,
         timeout: int = 60,
     ):
         self.__model = model
         self.__system_prompt = system_prompt
+        self.__rci_follow_up_system_prompt = rci_follow_up_system_prompt
         self.__temperature = temperature
         self.__timeout = timeout
 
@@ -81,15 +83,15 @@ class OllamaBackendHandler(BackendHandler):
             Union[str, None]: The generated code or None if extraction fails.
         """
         try:
-            client = Client(timeout=self.__timeout)
+            client = Client(timeout=self._BackendHandler__timeout)
             response: ChatResponse = client.chat(
-                model=self.__model,
+                model=self._BackendHandler__model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},
                 ],
                 options={
-                    "temperature": self.__temperature,
+                    "temperature": self._BackendHandler__temperature,
                 },
             )
 
@@ -116,7 +118,7 @@ class OllamaBackendHandler(BackendHandler):
         Returns:
             Union[str, None]: The generated code or None if extraction fails.
         """
-        return self.__chat(self.__system_prompt, user_prompt)
+        return self.__chat(self._BackendHandler__system_prompt, user_prompt)
 
     def rci_request(
         self,
@@ -135,7 +137,12 @@ class OllamaBackendHandler(BackendHandler):
             Union[str, None]: The generated code or None if extraction fails.
         """
         code = self.request(user_prompt)
+
         for _ in range(0, amount_of_iterations, 1):
+            if code is None:
+                print("Failed to get code needed for RCI from model.", file=sys.stderr)
+                return None
+
             critique = self.__chat(
                 system_prompt=None,
                 user_prompt=f"Review the following answer and find {'security' if improve == 'security' else 'energy efficiency'} problems with it: \n```\n{code}\n```",
@@ -149,11 +156,19 @@ class OllamaBackendHandler(BackendHandler):
                 f"```\n{code}\n```"
             )
 
-            code = self.request(modified_user_prompt)
+            code = self.__chat(
+                system_prompt=self._BackendHandler__rci_follow_up_system_prompt,
+                user_prompt=modified_user_prompt,
+            )
 
 
 def get_backend_handler_by_name(
-    platform: str, model: str, system_prompt: str, temperature: float, timeout: int
+    platform: str,
+    model: str,
+    system_prompt: str,
+    rci_follow_up_system_prompt: str,
+    temperature: float,
+    timeout: int,
 ) -> BackendHandler:
     """
     Get the backend handler by name.
@@ -169,6 +184,7 @@ def get_backend_handler_by_name(
         return OllamaBackendHandler(
             model=model,
             system_prompt=system_prompt,
+            rci_follow_up_system_prompt=rci_follow_up_system_prompt,
             temperature=temperature,
             timeout=timeout,
         )

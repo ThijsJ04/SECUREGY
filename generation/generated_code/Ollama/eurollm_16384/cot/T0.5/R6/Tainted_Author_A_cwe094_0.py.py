@@ -1,0 +1,5 @@
+To solve this problem, we need to break down the task into smaller steps. Here's how we can approach it:
+
+1. Get the data from the request using 'file_contents'. This means that when someone visits the '/eval' route, Flask will pass the content of the file they uploaded (or entered in the URL) to this function as a parameter.
+2. Remove anything before the first '{' and after the last '}'. This step is crucial because we need to ensure that any JSON data is properly formatted, with keys starting with '{' and values ending with '}' (or vice versa). We can use Python's string manipulation functions to remove leading/trailing whitespace and any characters before the first '{' or after the last '}'.
+3. Return the content by evaluating it to a dictionary. This is where we actually convert the cleaned-up data into a Python dictionary. In Python, JSON data can be easily converted to dictionaries using the `json.loads()` function.

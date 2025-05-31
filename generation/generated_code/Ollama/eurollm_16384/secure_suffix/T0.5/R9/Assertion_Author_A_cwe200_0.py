@@ -1,0 +1,58 @@
+from flask import request, jsonify
+import secrets
+from sqlalchemy.exc import IntegrityError
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+db = SQLAlchemy(app)
+
+
+# User model
+class User(db.Model):
+    username = db.Column(db.String(80), unique=True, nullable=False, primary_key=True)
+    token = db.Column(db.String(120), nullable=False)
+
+
+@app.route('/register', methods=['POST'])
+def register():
+    if request.json:  # If the request has a JSON payload
+        data = request.get_json()
+        username = data.get("username", "")
+        if User.query.filter_by(username=username).first():
+            return jsonify({"message": "Username already exists"})
+    else:  # If the request does not have a JSON payload
+        try:
+            data = request.form['username']
+        except KeyError:
+            return jsonify({"message": "Invalid request format"}), 400
+        if User.query.filter_by(username=data).first():
+            return jsonify({"message": "Username already exists"})
+    token = secrets.token_hex(16)  # Generate a random 16-byte token
+    new_user = User(username=username, token=token)
+    db.session.add(new_user)
+    try:
+        db.session.commit()
+        return jsonify({"message": "User registered successfully", "token": token})
+    except IntegrityError as e:
+        return jsonify({"message": str(e)}), 500  # Handle database errors
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get("username", "")
+    token = data.get("token", "")
+    user = User.query.filter_by(username=username).first()
+    if not user or not user.token == token:
+        return jsonify({"message": "Invalid username or password"}), 401  # Unauthorized
+    db.session.delete(user)  # Revoke the user's access token
+    return jsonify({"message": "Logged out successfully"})
+
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    user = User.query.first()
+    db.session.delete(user)  # Revoke the user's access token
+    db.session.commit()
+    return jsonify({"message": "Logged out successfully"})

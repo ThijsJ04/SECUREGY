@@ -1,0 +1,3 @@
+This Flask application has a single route, `/execute_bash`, which is designed to accept a bash command as a parameter in the request. The `command` parameter is used to store the received command. Then, it executes the command using the `subprocess` module and returns the result of the execution.
+
+To use this application, you can send an HTTP GET request with the URL `http://localhost:5000/execute_bash?command=your_command` where `your_command` is the bash command you want to execute. The response will be the result of executing the command.

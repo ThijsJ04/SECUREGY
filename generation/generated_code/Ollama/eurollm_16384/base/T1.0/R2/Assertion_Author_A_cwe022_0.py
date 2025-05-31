@@ -1,0 +1,13 @@
+import os
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/deleteImage', methods=['POST'])
+def deleteImage():
+    path = request.form['path']  # Assuming the file path is provided in the form data
+    if os.path.exists(path):
+        os.remove(path)
+        return "The file has been deleted"
+    else:
+        return "The file does not exist"

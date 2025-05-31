@@ -1,0 +1,27 @@
+import marshal
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/unmarshal')
+def unmarshal_data():
+    '''
+    Get the marshalled data from the request using 'data' as the key.
+    Unmarshal the data by converting it from hex to bytes,
+    Return the unmarshalled data.
+    '''
+    data_hex = request.args.get('data')
+    if not data_hex:
+        return jsonify({'error': 'No data provided'}), 400
+
+    try:
+        bytes_data = bytes.fromhex(data_hex)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+
+    try:
+        unmarshalled_data = marshal.loads(bytes_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify(unmarshalled_data)

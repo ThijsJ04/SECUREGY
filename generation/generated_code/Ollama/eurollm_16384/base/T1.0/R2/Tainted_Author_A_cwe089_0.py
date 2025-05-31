@@ -1,0 +1,17 @@
+@app.route('/get_post', methods=['GET'])
+def get_account():
+    title = request.args.get('title')
+    if not title:
+        return "Title is required", 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    sql = "SELECT * FROM posts WHERE title=?"
+    cursor.execute(sql, (title,))
+    row = cursor.fetchone()
+    conn.close()
+
+    if row:
+        return str(row)
+    else:
+        return "Post not found", 404

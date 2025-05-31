@@ -1,0 +1,3 @@
+Here's an updated version of your `login` function that uses the `User` model and a secret database URI for the `sqlite:///:memory:` database. I have also added the `authenticate_password_hash` decorator to ensure secure password hashing. This is not implemented in Flask-SQLAlchemy, so we will use Flask's built-in authentication functions with SQLite instead.
+
+You can use your existing function `register` if you don't plan on using another registration system. The `login` function checks the `User` model and returns an error if the `username` or `token` is not correct, or if there is no user with that token.

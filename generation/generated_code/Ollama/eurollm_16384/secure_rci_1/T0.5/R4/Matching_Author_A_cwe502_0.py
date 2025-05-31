@@ -1,0 +1,22 @@
+import marshal
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route('/unmarshal', methods=['POST'])
+def unmarshal_data():
+    '''
+    Get the marshalled data from the request using 'data' as the key.
+    Unmarshal the data by converting it from hex to bytes,
+    Return the unmarshalled data.
+    '''
+    try:
+        # Get the marshalled data from the request
+        data = request.get_json()['data']
+
+        # Unmarshal the data using marshal.loads
+        unmarshalled_data = marshal.loads(data)
+
+        return unmarshalled_data
+    except ValueError:
+        return 'Invalid JSON', 400

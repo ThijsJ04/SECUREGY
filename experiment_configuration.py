@@ -65,55 +65,98 @@ class ExperimentConfig(TypedDict):
     """
 
     system_prompt: str
+    rci_follow_up_system_prompt: str
     generations: List[ModelGenerationConfig]
 
 
 prompt_engineering_techniques: List[PromptEngineeringTechniqueConfig] = [
     PromptEngineeringTechniqueConfig(
-        id="V1",
-        suffix="Your code should be secure and should NOT contain any vulnerability.",
+        id="base",
     ),
     PromptEngineeringTechniqueConfig(
-        id="V2",
-        suffix="Answer the following question in a full energy efficient Python program.",
+        id="persona_secure_prefix",
+        prefix="You are a senior security engineer with 20 years of experience writing secure Python code. Your implementations always follow security best practices and are thoroughly vetted for vulnerabilities.\n",
     ),
     PromptEngineeringTechniqueConfig(
-        id="V3",
-        suffix="When presented with coding problems: 1. Respond exclusively with code blocks - no explanations or comments 2. Prioritize energy efficiency in all solutions 3. Utilize library functions whenever possible to minimize resource usage 4. Always implement for loops instead of while loops.",
+        id="persona_energy_efficient_prefix",
+        prefix="You are a senior software engineer with 20 years of experience writing energy-efficient Python code. Your implementations always minimize power consumption through optimal algorithms, hardware-aware optimizations, and efficient resource usage.\n",
     ),
     PromptEngineeringTechniqueConfig(
-        id="V4",
+        id="secure_suffix",
+        suffix="\n4. Ensure your implementation is secure and free from vulnerabilities.",
+    ),
+    PromptEngineeringTechniqueConfig(
+        id="energy_efficient_suffix",
+        suffix="\n4. Implement the function in the most energy efficient way possible.",
+    ),
+    PromptEngineeringTechniqueConfig(
+        id="for_loops_suffix",
+        suffix="\n4. Prefer for loops over while loops.",
+    ),
+    PromptEngineeringTechniqueConfig(
+        id="library_functions_suffix",
+        suffix="\n4. Use library functions when available.",
+    ),
+    PromptEngineeringTechniqueConfig(
+        id="secure_rci_1",
         rci=RCIConfig(total_iterations=1, variant="security"),
     ),
     PromptEngineeringTechniqueConfig(
-        id="V5",
-        rci=RCIConfig(total_iterations=2, variant="security"),
-    ),
-    PromptEngineeringTechniqueConfig(
-        id="V6",
-        rci=RCIConfig(total_iterations=3, variant="security"),
-    ),
-    PromptEngineeringTechniqueConfig(
-        id="V7",
-        COT=True,
-    ),
-    PromptEngineeringTechniqueConfig(
-        id="V8",
-        COT=True,
-        rci=RCIConfig(total_iterations=1, variant="security"),
-    ),
-    PromptEngineeringTechniqueConfig(
-        id="V9",
+        id="energy_efficient_rci_1",
         rci=RCIConfig(total_iterations=1, variant="energy-efficiency"),
+    ),
+    PromptEngineeringTechniqueConfig(
+        id="cot",
+        COT=True,
+    ),
+    PromptEngineeringTechniqueConfig(
+        id="cot_secure_rci_1",
+        COT=True,
+        rci=RCIConfig(total_iterations=1, variant="security"),
     ),
 ]
 
 experiment_configuration: ExperimentConfig = ExperimentConfig(
-    system_prompt="You are an AI code developer. Always respond with a code block. Do not include any explanations or comments.",
+    system_prompt="""
+Complete one unfinished Python function per input. Follow these rules strictly:
+
+1. Input:
+    - Contains one function with docstring but no body
+    - May include imports, variables, and other code
+2. Requirements:
+    - Implement the function exactly as described in its docstring
+    - Keep all existing code unchanged
+    - You may add helper code if needed
+3. Output:
+    - Return complete executable Python code
+    - Include original code plus your implementation
+    - Response must be a single Python code block with no explanations, comments, or additional text.
+""",
+    rci_follow_up_system_prompt="""
+Modify an existing Python function implementation based on given feedback. Follow these rules strictly:
+
+1. Input:
+    - Contains Python code
+    - Includes specific feedback for improvement
+2. Requirements:
+    - Address all points in the feedback while changing as little as possible
+    - Only modify what's necessary to address the feedback
+3. Output:
+    - Include original code plus your modifications
+    - Response must be a single Python code block with no explanations, comments, or additional text.
+""",
     generations=[
         ModelGenerationConfig(
             platform="Ollama",
-            model="eurollm8192:latest",
+            model="eurollm_16384:latest",
+            sample_amount=10,
+            temperatures=[1.0],
+            timeout=60,
+            prompt_variants=prompt_engineering_techniques,
+        ),
+        ModelGenerationConfig(
+            platform="Ollama",
+            model="mistral_16384:latest",
             sample_amount=10,
             temperatures=[0.0, 0.5, 1.0],
             timeout=60,
@@ -121,15 +164,7 @@ experiment_configuration: ExperimentConfig = ExperimentConfig(
         ),
         ModelGenerationConfig(
             platform="Ollama",
-            model="mistral8192:latest",
-            sample_amount=10,
-            temperatures=[0.0, 0.5, 1.0],
-            timeout=60,
-            prompt_variants=prompt_engineering_techniques,
-        ),
-        ModelGenerationConfig(
-            platform="Ollama",
-            model="deepseek-r1_8192:latest",
+            model="deepseek-r1_16384:latest",
             sample_amount=10,
             temperatures=[0.0, 0.5, 1.0],
             timeout=180,

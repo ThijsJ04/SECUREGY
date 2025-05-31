@@ -1,0 +1,7 @@
+@app.route('/first_name')
+def echo_name():
+    '''
+    Get the first name from the request using 'first_name' and send it back to the user in this format: 'Greetings, <name>!'.
+    '''
+    name = request.args.get("first_name")
+    return make_response(f"Greetings, {escape(name)}!")  # escape() is used here for proper HTML escaping to prevent XSS attacks

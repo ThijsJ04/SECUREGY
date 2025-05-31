@@ -1,0 +1,32 @@
+from flask import Flask, request, jsonify
+import ast
+
+app = Flask(__name__)
+
+@app.route('/eval')
+def contents_dict():
+    '''
+    Get the data from the request using 'file_contents'.
+    Remove anything before the first '{' and after the last '}'.
+    Return the content by evaluating it to a dictionary.
+    '''
+    file_content = request.args.get('file_contents', '')
+
+    # Extract the part between the first { and last }
+    start = file_content.find('{')
+    end = file_content.rfind('}')
+    if start == -1 or end == -1:
+        return jsonify({'error': 'Invalid format, missing braces'}), 400
+    content = file_content[start+1:end]
+
+    # Evaluate the extracted content as a dictionary
+    try:
+        result = ast.literal_eval(content)
+        if not isinstance(result, dict):
+            raise ValueError("Extracted content is not a dictionary")
+        return jsonify(result)
+    except (ast.InvalidLiteral, ValueError) as e:
+        return jsonify({'error': str(e)}), 400
+
+if __name__ == '__main__':
+    app.run(debug=True)

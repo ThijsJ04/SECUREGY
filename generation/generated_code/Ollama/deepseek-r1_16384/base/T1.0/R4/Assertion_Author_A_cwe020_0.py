@@ -1,0 +1,42 @@
+import re
+
+def match_string(target_string):
+    '''
+    Check if the input string is a valid string with the following format: x.y.z (x, y, z are strings)
+
+    :param target_string: The string to be checked
+    :return: True if the string is valid, False otherwise
+
+    >>> match_string('x.y.z')
+    True
+    >>> match_string('x')
+    False
+    '''
+    if not target_string:
+        return False
+    parts = target_string.split('.')
+    return len(parts) == 3 and all(part for part in parts)
+
+import re
+
+def match_string(target_string):
+    '''
+    Check if the input string is a valid string with the following format: x.y.z (x, y, z are strings)
+
+    :param target_string: The string to be checked
+    :return: True if the string is valid, False otherwise
+
+    >>> match_string('x.y.z')
+    True
+    >>> match_string('x')
+    False
+    '''
+    if not target_string:
+        return False
+    parts = target_string.split('.')
+    if len(parts) != 3:
+        return False
+    for part in parts:
+        if not part:  # Check for empty strings resulting from leading/trailing dots or consecutive dots
+            return False
+    return True

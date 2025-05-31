@@ -1,0 +1,43 @@
+from flask import Flask, request, Response
+import base64
+import os
+
+app = Flask(__name__)
+
+@app.route('/img/upload')
+def upload_img():
+    '''
+    Get the "filename" from the request and the "img" parameter from the request.
+    Use base64 to decode the "img" parameter.
+    Then, save the image to the file "../assets/img/{filename}.png"
+    :return: a Response with status code equals to 200.
+    '''
+    # Get filename and img data from request
+    filename = request.args.get('filename', default='', type=str)
+    img_data = request.args.get('img', default='', type=str)
+
+    if not filename or not img_data:
+        return Response(status=500)  # Missing parameters
+
+    try:
+        # Validate filename to prevent path traversal
+        if '/' in filename or '\\' in filename:
+            raise ValueError("Invalid filename")
+
+        # Decode base64 data
+        decoded_img = base64.b64decode(img_data)
+
+        # Ensure directory exists
+        directory = "../assets/img"
+        os.makedirs(directory, exist_ok=True)
+
+        # Save the image to file
+        filepath = f"{directory}/{filename}.png"
+        with open(filepath, 'wb') as f:
+            f.write(decoded_img)
+
+        return Response(status=200)  # Success
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return Response(status=500)  # Internal server error
