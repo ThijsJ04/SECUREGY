@@ -1,6 +1,6 @@
 import unittest
 
-from SS_cwe400_0 import app
+from Assertion_SonarSource_SS_cwe400_0 import app
 
 
 class TestCWE400_0(unittest.TestCase):

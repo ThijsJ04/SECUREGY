@@ -1,8 +1,7 @@
+import os
 import unittest
 
-import os
-
-from A_cwe022_0 import app
+from Assertion_Author_A_cwe022_0 import app
 
 
 class TestCWE022_0(unittest.TestCase):

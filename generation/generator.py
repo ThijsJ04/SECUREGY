@@ -124,8 +124,8 @@ class Generator:
                                 self.__output_dir
                                 / f"{generation['platform']}"
                                 / f"{generation['model'].split(':')[0]}"
-                                / f"{prompt_variant['id']}"
                                 / f"T{temperature}"
+                                / f"{prompt_variant['id']}"
                                 / f"R{sample_index}"
                                 / f"{input_prompt['id']}.py"
                             )

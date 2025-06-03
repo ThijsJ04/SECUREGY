@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from A_cwe200_0 import app, db
+from Assertion_Author_A_cwe200_0 import app, db
 
 
 class TestCWE200_0(unittest.TestCase):

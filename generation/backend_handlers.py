@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from ollama import ResponseError, ChatResponse, Client
 from re import DOTALL, search, sub
 import sys
-from textwrap import dedent
 from typing import Literal, Union
 
 
@@ -104,7 +103,7 @@ class OllamaBackendHandler(BackendHandler):
                 print("Failed to extract code block from LLM output", file=sys.stderr)
                 print(f"LLM output: {llm_output}", file=sys.stderr)
             else:
-                return dedent(output) if extract else output
+                return output
         except ResponseError as e:
             print(f"Failed to get response from model: {e}", file=sys.stderr)
 

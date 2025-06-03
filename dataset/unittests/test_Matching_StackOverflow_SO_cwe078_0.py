@@ -1,6 +1,7 @@
 import unittest
-from SO_cwe078_0 import app
-from unittest.mock import patch, Mock
+from unittest.mock import patch
+
+from Matching_StackOverflow_SO_cwe078_0 import app
 
 
 class TestCWE078_0(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from A_cwe079_0 import app
+from Assertion_Author_A_cwe079_0 import app
 
 
 class TestCWE079_0(unittest.TestCase):

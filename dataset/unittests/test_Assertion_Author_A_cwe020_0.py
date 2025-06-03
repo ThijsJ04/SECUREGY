@@ -1,5 +1,6 @@
 import unittest
-from A_cwe020_0 import match_string
+
+from Assertion_Author_A_cwe020_0 import match_string
 
 
 class TestCWE020_0(unittest.TestCase):

@@ -1,5 +1,6 @@
 import unittest
-from A_cwe094_0 import app
+
+from Tainted_Author_A_cwe094_0 import app
 
 
 class TestCWE094_0(unittest.TestCase):

@@ -2,7 +2,7 @@ import base64
 import os
 import unittest
 
-from A_cwe434_0 import app
+from Assertion_Author_A_cwe434_0 import app
 
 
 class TestCWE434_0(unittest.TestCase):
