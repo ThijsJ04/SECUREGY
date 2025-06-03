@@ -1,0 +1,31 @@
+import secrets
+
+from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+db = SQLAlchemy(app)
+
+
+# User model
+class User(db.Model):
+    username = db.Column(db.String(80), unique=True, nullable=False, primary_key=True)
+    token = db.Column(db.String(120), nullable=False)
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    username = data.get("username", "")
+    token = data.get("token", "")
+
+    user = User.query.filter_by(username=username).first()
+    if not user or not user.token == token:
+        return jsonify({"message": "Invalid username or token"})
+
+    db.session.refresh(user)  # Refresh the user object to get its current token
+    if user.token != request.headers.get("Authorization"):
+        return jsonify({"message": "Expired token"})
+
+    return jsonify({"message": "Authenticated successfully"})

@@ -1,6 +1,0 @@
-To implement the login endpoint, you can follow these steps:
-
-1.  Create a new `User` model with a `username` column and a `token` column for storing user information. The token should be generated using Flask-Flask's `secrets` module.
-2.  In the `register()` function, check if a user with the given username already exists in the database before generating a new token and creating a new user. If a matching user is found, return an error message indicating that the username already exists.
-3.  Create a new endpoint `/login` to handle the login process. In this endpoint, extract the `username` and `token` from the request body. Use these values to query the database for matching user records. If a user record is found with both the username and token fields matching the provided values, return an "Authorized" message. Otherwise, return an error message indicating that the username or token combination does not exist in the database.
-4.  Remember to handle potential errors during data fetching from the database and ensure secure handling of sensitive information like tokens. In a real-world application, it's best practice to hash passwords instead of storing them as plaintext.

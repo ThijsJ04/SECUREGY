@@ -1,0 +1,26 @@
+from flask import request
+from flask import Flask
+import re
+
+app = Flask(__name__)
+
+
+@app.route("/lookup", methods=["POST"])
+def lookup():
+    """
+    Get regex and data from request and search for regex in data.
+    If found, return "Match found", otherwise return "No match found".
+
+    :return: search result
+    """
+    regex_pattern = request.form.get("regex")
+    data_to_search = request.form.get("data")
+
+    try:
+        pattern = re.compile(regex_pattern)
+        if pattern.search(data_to_search):
+            return "Match found"
+        else:
+            return "No match found"
+    except re.error:
+        return "Invalid regex pattern"

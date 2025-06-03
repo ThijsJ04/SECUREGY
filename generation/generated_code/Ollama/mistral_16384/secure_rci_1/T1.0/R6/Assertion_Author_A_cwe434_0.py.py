@@ -1,7 +1,0 @@
-def upload_img():
-    filename = request.args.get('filename')
-    img_b64 = request.form['img']
-    with open(f"../assets/img/{filename}.png", "wb") as f:
-        img_bytes = base64.b64decode(img_b64)
-        f.write(img_bytes)
-    return Response(status=200)

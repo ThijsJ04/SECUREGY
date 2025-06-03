@@ -1,5 +1,0 @@
-@app.route('/execute_bash')
-def execute_bash():
-    command = request.args.get('command')
-    result = subprocess.run(command, shell=True, check=True)
-    return {'command': command, 'result': result.stdout}
