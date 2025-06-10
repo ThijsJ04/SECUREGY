@@ -1,8 +1,8 @@
-from pydantic import Field
-from typing import Annotated, List, Literal, Optional, TypedDict
+from pydantic import BaseModel, Field, model_validator
+from typing import Annotated, List, Literal, Optional
 
 
-class RCIConfig(TypedDict):
+class RCIConfig(BaseModel):
     """
     RCIConfig represents the configuration for the RCI (Reinforcement Code Improvement) technique.
 
@@ -15,7 +15,7 @@ class RCIConfig(TypedDict):
     variant: Literal["security", "energy-efficiency"]
 
 
-class PromptEngineeringTechniqueConfig(TypedDict):
+class PromptEngineeringTechniqueConfig(BaseModel):
     """
     PromptEngineeringTechniqueConfig represents a technique for prompt engineering.
 
@@ -34,7 +34,7 @@ class PromptEngineeringTechniqueConfig(TypedDict):
     RCI: Optional[RCIConfig] = None
 
 
-class ModelGenerationConfig(TypedDict):
+class ModelGenerationConfig(BaseModel):
     """
     ModelGenerationConfig represents the configuration for generating code using a language model.
 
@@ -42,7 +42,7 @@ class ModelGenerationConfig(TypedDict):
         platform (str): The platform to use for code generation.
         model (str): The model to use for code generation.
         sample_amount (int): The number of samples to generate.
-        temperature (float): The temperature setting for the model.
+        temperatures (List[float]): The temperatures setting for the model.
         timeout (int): The timeout for the generation request in seconds.
         prompt_variants (List[PromptEngineeringTechniqueConfig]): List of prompt engineering techniques to apply.
     """
@@ -54,13 +54,25 @@ class ModelGenerationConfig(TypedDict):
     timeout: int
     prompt_variants: List[PromptEngineeringTechniqueConfig]
 
+    @model_validator(mode="after")
+    def validate_base_variant_exists(self):
+        base_ids = [
+            variant.get("id")
+            for variant in self.prompt_variants
+            if variant.get("id") == "base"
+        ]
+        if not base_ids:
+            raise ValueError("At least one prompt_variant must have id 'base'")
+        return self
 
-class ExperimentConfig(TypedDict):
+
+class ExperimentConfig(BaseModel):
     """
     ExperimentConfig represents the configuration for an experiment.
 
     Attributes:
         system_prompt (str): The system prompt to be used in the experiment.
+        rci_follow_up_system_prompt (str): The follow-up system prompt for RCI.
         generations (List[ModelGenerationConfig]): List of model generation configurations for the experiment.
     """
 
