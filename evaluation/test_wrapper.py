@@ -132,15 +132,15 @@ def run(test_file: str, output_location: str) -> None:
     if test_file.endswith(".py"):
         test_file = test_file[:-3]
 
-    test_suite = defaultTestLoader.loadTestsFromName(test_file)
-    if not test_suite.countTestCases():
-        result = CSVTestResult(None, None, 0)
-        result.results.append(("No tests available", "info", ""))
-        result.save_to_csv(output_location, None)
-        return result, None
-
-    runner = TextTestRunner(resultclass=CSVTestResult)
     try:
+        test_suite = defaultTestLoader.loadTestsFromName(test_file)
+        if not test_suite.countTestCases():
+            result = CSVTestResult(None, None, 0)
+            result.results.append(("No tests available", "info", ""))
+            result.save_to_csv(output_location, None)
+            return result, None
+
+        runner = TextTestRunner(resultclass=CSVTestResult)
         correctness_result = runner.run(test_suite)
         all_emission_results = run_emission_test(test_file)
         correctness_result.save_to_csv(output_location, all_emission_results)
