@@ -57,9 +57,7 @@ class ModelGenerationConfig(BaseModel):
     @model_validator(mode="after")
     def validate_base_variant_exists(self):
         base_ids = [
-            variant.get("id")
-            for variant in self.prompt_variants
-            if variant.get("id") == "base"
+            variant.id for variant in self.prompt_variants if variant.id == "base"
         ]
         if not base_ids:
             raise ValueError("At least one prompt_variant must have id 'base'")
