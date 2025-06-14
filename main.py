@@ -7,6 +7,11 @@ from experiment_configuration import experiment_configuration
 from evaluation.evaluator import Evaluator
 from generation.generator import Generator
 from generation.post_processing import apply_post_processing
+from result_parsing._extras.get_error_rates import get_error_rates
+from result_parsing.energy_efficiency.energy_efficiency_parsing import (
+    parse_energy_efficiency_results,
+)
+from result_parsing.security.security_parsing import parse_security_results
 
 #####
 ## Specify which phases of the experiment to run
@@ -14,8 +19,8 @@ from generation.post_processing import apply_post_processing
 CODE_GENERATION_PHASE = False
 CODE_GENERATION_PHASE_APPLY_POST_PROCESSING = False
 CODE_EVALUATION_PHASE = False
-RESULT_PARSING_PHASE = False
-
+RESULT_PARSING_PHASE = True
+RESULT_PARSING_PHASE_EXTRAS = True
 
 if __name__ == "__main__":
     # Change STDOUT and STDERR to /logs
@@ -59,6 +64,13 @@ if __name__ == "__main__":
 
     if RESULT_PARSING_PHASE:
         print("Starting result parsing phase...", file=sys.stdout)
+        parse_energy_efficiency_results()
+        parse_security_results(k_values=[1, 3, 5])
 
+        if RESULT_PARSING_PHASE_EXTRAS:
+            print("Running extra result parsing tasks...", file=sys.stdout)
+            get_error_rates()
+        else:
+            print("Skipping extra result parsing tasks.", file=sys.stdout)
     else:
         print("Skipping result parsing phase.", file=sys.stdout)
