@@ -5,20 +5,28 @@ from typing import List, Tuple
 def compute_pareto_front(
     energy_efficiency_results: List[float], security_results: List[float]
 ) -> List[Tuple[float, float]]:
-    pareto_front = []
+    """
+    Compute the Pareto front from energy efficiency and security results.
 
-    for i in range(len(energy_efficiency_results)):
-        is_pareto = True
-        for j in range(len(energy_efficiency_results)):
-            if i != j:
-                if (
-                    energy_efficiency_results[j] >= energy_efficiency_results[i]
-                    and security_results[j] >= security_results[i]
-                ):
-                    is_pareto = False
-                    break
-        if is_pareto:
-            pareto_front.append((energy_efficiency_results[i], security_results[i]))
+    Args:
+        energy_efficiency_results (List[float]): Energy efficiency scores.
+        security_results (List[float]): Security scores.
+
+    Returns:
+        List[Tuple[float, float]]: Pareto front points.
+    """
+
+    points = list(zip(energy_efficiency_results, security_results))
+    points.sort(key=lambda x: x[0], reverse=True)
+
+    pareto_front = []
+    max_security = float("-inf")
+
+    for point in points:
+        _, security = point
+        if security > max_security:
+            pareto_front.append(point)
+            max_security = security
 
     return pareto_front
 

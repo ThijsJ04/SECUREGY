@@ -8,6 +8,7 @@ def create_heatmap_to_base(
     results_df: pd.DataFrame, figsize: Tuple[int, int] = (12, 8)
 ) -> None:
     viz_data = results_df.copy()
+
     viz_data["config"] = (
         viz_data["platform"]
         + " | "

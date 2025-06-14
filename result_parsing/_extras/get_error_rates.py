@@ -24,7 +24,9 @@ def clean_error_message(message: str) -> str:
         return message
 
 
-def get_error_rates() -> None:
+def get_error_rates(
+    output_path: str = "result_parsing/results/error_summary.csv",
+) -> None:
     """
     Calculate error rates from test-based results and save a summary CSV.
     """
@@ -41,4 +43,4 @@ def get_error_rates() -> None:
     )
 
     error_summary["Total Errors (max 100)"] = error_summary.sum(axis=1)
-    error_summary.to_csv("result_parsing/results/error_summary.csv")
+    error_summary.to_csv(output_path)
