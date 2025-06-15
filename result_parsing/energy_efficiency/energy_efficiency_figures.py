@@ -24,16 +24,19 @@ def create_heatmap_to_base(
 
     plt.figure(figsize=figsize)
 
-    sns.heatmap(
+    ax = sns.heatmap(
         heatmap_data,
         annot=True,
         fmt=".0f",
         cmap="RdYlGn",
         center=0,
         cbar_kws={"label": "Score vs Base"},
-        linewidths=0.5,
+        linewidths=0,
         square=False,
     )
+
+    for i in range(len(heatmap_data.index)):
+        ax.axhline(y=i, color="white", linewidth=5.0)
 
     plt.title(
         "Energy Efficiency Performance vs Base\n(Positive = Better, Negative = Worse)",

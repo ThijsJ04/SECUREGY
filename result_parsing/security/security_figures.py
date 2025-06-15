@@ -178,16 +178,19 @@ def create_heatmap_to_base(
 
     plt.figure(figsize=figsize)
 
-    sns.heatmap(
+    ax = sns.heatmap(
         heatmap_data,
         annot=True,
         fmt=".0f",
         cmap="RdYlGn",
         center=0,
         cbar_kws={"label": "Aggregated Score vs Base"},
-        linewidths=0.5,
+        linewidths=0.0,
         square=False,
     )
+
+    for i in range(len(heatmap_data.index)):
+        ax.axhline(y=i, color="white", linewidth=5.0)
 
     plt.title(
         "Security Performance vs Base (All Metrics Aggregated)\n(Positive = Better, Negative = Worse)",
