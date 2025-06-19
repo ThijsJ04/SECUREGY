@@ -1,4 +1,5 @@
 from collections import defaultdict
+from os import makedirs
 import pandas as pd
 from scipy import stats
 from typing import Optional
@@ -225,6 +226,8 @@ def parse_energy_efficiency_results():
         select_columns=["Key", "Value", "Run_Number"],
     )
     results_df["Value"] = results_df["Value"].astype(float)
+
+    makedirs("result_parsing/results", exist_ok=True)
 
     results_to_base = analyze_energy_efficiency_to_base(results_df)
     heatmap_to_base = create_heatmap_to_base(results_to_base)

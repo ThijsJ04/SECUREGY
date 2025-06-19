@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from ollama import ResponseError, ChatResponse, Client
 from re import DOTALL, search, sub
 import sys
+from textwrap import dedent
 from typing import Literal, Union
 
 
@@ -95,8 +96,11 @@ class OllamaBackendHandler(BackendHandler):
             )
 
             llm_output = response.message.content
+            extracted_value = self.__extract_code_block_content(llm_output)
             output = (
-                self.__extract_code_block_content(llm_output) if extract else llm_output
+                (dedent(extracted_value) if extracted_value else extracted_value)
+                if extract
+                else llm_output
             )
 
             if output is None:
@@ -159,6 +163,8 @@ class OllamaBackendHandler(BackendHandler):
                 system_prompt=self._BackendHandler__rci_follow_up_system_prompt,
                 user_prompt=modified_user_prompt,
             )
+
+        return code
 
 
 def get_backend_handler_by_name(
