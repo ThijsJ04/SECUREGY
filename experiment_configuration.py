@@ -109,11 +109,11 @@ prompt_engineering_techniques: List[PromptEngineeringTechniqueConfig] = [
     ),
     PromptEngineeringTechniqueConfig(
         id="secure_rci_1",
-        rci=RCIConfig(total_iterations=1, variant="security"),
+        RCI=RCIConfig(total_iterations=1, variant="security"),
     ),
     PromptEngineeringTechniqueConfig(
         id="energy_efficient_rci_1",
-        rci=RCIConfig(total_iterations=1, variant="energy-efficiency"),
+        RCI=RCIConfig(total_iterations=1, variant="energy-efficiency"),
     ),
     PromptEngineeringTechniqueConfig(
         id="cot",
@@ -122,7 +122,7 @@ prompt_engineering_techniques: List[PromptEngineeringTechniqueConfig] = [
     PromptEngineeringTechniqueConfig(
         id="cot_secure_rci_1",
         COT=True,
-        rci=RCIConfig(total_iterations=1, variant="security"),
+        RCI=RCIConfig(total_iterations=1, variant="security"),
     ),
 ]
 

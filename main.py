@@ -16,11 +16,11 @@ from result_parsing.security.security_parsing import parse_security_results
 #####
 ## Specify which phases of the experiment to run
 #####
-CODE_GENERATION_PHASE = False
-CODE_GENERATION_PHASE_APPLY_POST_PROCESSING = False
-CODE_EVALUATION_PHASE = False
+CODE_GENERATION_PHASE = True
+CODE_GENERATION_PHASE_APPLY_POST_PROCESSING = True
+CODE_EVALUATION_PHASE = True
 RESULT_PARSING_PHASE = True
-RESULT_PARSING_PHASE_EXTRAS = False
+RESULT_PARSING_PHASE_EXTRAS = True
 
 if __name__ == "__main__":
     # Change STDOUT and STDERR to /logs

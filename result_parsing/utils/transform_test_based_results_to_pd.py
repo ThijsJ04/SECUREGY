@@ -88,6 +88,10 @@ def transform_test_based_results_to_pd(
         metadata = parse_result_filename(csv_file.name)
         corresponding_csv = pd.read_csv(csv_file)
 
+        # Print all unique sections for debugging
+        unique_sections = corresponding_csv["Section"].unique()
+        print(f"Unique sections in {csv_file.name}: {unique_sections}", file=sys.stderr)
+
         filter_condition = corresponding_csv["Section"] == section_filter
         if exclude_keys:
             for key in exclude_keys:
@@ -107,5 +111,7 @@ def transform_test_based_results_to_pd(
     else:
         print("No valid CSV files found to process", file=sys.stderr)
         sys.exit(1)
+
+    print(f"Combined DataFrame shape: {combined_df.shape}", file=sys.stderr)
 
     return combined_df

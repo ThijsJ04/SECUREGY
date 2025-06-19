@@ -32,7 +32,9 @@ def get_error_rates(
     """
 
     results_df = transform_test_based_results_to_pd(section_filter="Error")
+    print(results_df.head())
     results_df["Message"] = results_df["Message"].apply(clean_error_message)
+    print(results_df.head())
 
     error_summary = results_df.pivot_table(
         values="Key",

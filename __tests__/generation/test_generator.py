@@ -2,32 +2,39 @@ import pytest
 from unittest.mock import Mock, patch, mock_open
 
 from generation.generator import Generator
+from experiment_configuration import (
+    ExperimentConfig,
+    ModelGenerationConfig,
+    PromptEngineeringTechniqueConfig,
+)
 
 
 class TestGenerator:
     @pytest.fixture
     def sample_experiment_config(self):
-        return {
-            "system_prompt": "You are a helpful coding assistant.",
-            "rci_follow_up_system_prompt": "Please improve the code.",
-            "generations": [
-                {
-                    "platform": "Ollama",
-                    "model": "llama3:8b",
-                    "temperatures": [0.0, 0.5],
-                    "timeout": 60,
-                    "sample_amount": 2,
-                    "prompt_variants": [
-                        {"id": "base", "prefix": "", "suffix": ""},
-                        {"id": "cot", "COT": True},
-                        {
-                            "id": "rci",
-                            "RCI": {"total_iterations": 1, "variant": "security"},
-                        },
+        return ExperimentConfig(
+            system_prompt="You are a helpful coding assistant.",
+            rci_follow_up_system_prompt="Please improve the code.",
+            generations=[
+                ModelGenerationConfig(
+                    platform="Ollama",
+                    model="llama3:8b",
+                    temperatures=[0.0, 0.5],
+                    timeout=60,
+                    sample_amount=2,
+                    prompt_variants=[
+                        PromptEngineeringTechniqueConfig(
+                            id="base", prefix="", suffix=""
+                        ),
+                        PromptEngineeringTechniqueConfig(id="cot", COT=True),
+                        PromptEngineeringTechniqueConfig(
+                            id="rci",
+                            RCI={"total_iterations": 1, "variant": "security"},
+                        ),
                     ],
-                }
+                )
             ],
-        }
+        )
 
     @pytest.fixture
     def sample_prompts(self):
@@ -42,7 +49,9 @@ class TestGenerator:
         generator = Generator(sample_experiment_config)
 
         original_prompt = "You are a helpful assistant."
-        pet_config = {"prefix": "IMPORTANT: ", "suffix": ""}
+        pet_config = PromptEngineeringTechniqueConfig(
+            id="important", prefix="IMPORTANT: ", suffix=""
+        )
 
         result = generator._Generator__apply_PET_to_system_prompt(
             original_prompt, pet_config
@@ -80,9 +89,11 @@ class TestGenerator:
 
         # Modify config to have only baseline variant
         config = sample_experiment_config.copy()
-        config["generations"][0]["prompt_variants"] = [{"id": "baseline"}]
-        config["generations"][0]["temperatures"] = [0.5]
-        config["generations"][0]["sample_amount"] = 1
+        config.generations[0].prompt_variants = [
+            PromptEngineeringTechniqueConfig(id="baseline")
+        ]
+        config.generations[0].temperatures = [0.5]
+        config.generations[0].sample_amount = 1
 
         mock_handler = Mock()
         mock_handler.request.return_value = "def sort_list(lst): return sorted(lst)"
@@ -122,9 +133,11 @@ class TestGenerator:
 
         # Modify config to have only COT variant
         config = sample_experiment_config.copy()
-        config["generations"][0]["prompt_variants"] = [{"id": "cot", "COT": True}]
-        config["generations"][0]["temperatures"] = [0.5]
-        config["generations"][0]["sample_amount"] = 1
+        config.generations[0].prompt_variants = [
+            PromptEngineeringTechniqueConfig(id="cot", COT=True)
+        ]
+        config.generations[0].temperatures = [0.5]
+        config.generations[0].sample_amount = 1
 
         mock_handler = Mock()
         mock_handler.request.return_value = "def sort_list(lst): return sorted(lst)"
@@ -156,11 +169,13 @@ class TestGenerator:
 
         # Modify config to have only RCI variant
         config = sample_experiment_config.copy()
-        config["generations"][0]["prompt_variants"] = [
-            {"id": "rci", "RCI": {"total_iterations": 2, "variant": "security"}}
+        config.generations[0].prompt_variants = [
+            PromptEngineeringTechniqueConfig(
+                id="rci", RCI={"total_iterations": 2, "variant": "security"}
+            )
         ]
-        config["generations"][0]["temperatures"] = [0.5]
-        config["generations"][0]["sample_amount"] = 1
+        config.generations[0].temperatures = [0.5]
+        config.generations[0].sample_amount = 1
 
         mock_handler = Mock()
         mock_handler.rci_request.return_value = (
@@ -197,9 +212,11 @@ class TestGenerator:
 
         # Modify config to have only baseline variant
         config = sample_experiment_config.copy()
-        config["generations"][0]["prompt_variants"] = [{"id": "baseline"}]
-        config["generations"][0]["temperatures"] = [0.5]
-        config["generations"][0]["sample_amount"] = 1
+        config.generations[0].prompt_variants = [
+            PromptEngineeringTechniqueConfig(id="baseline")
+        ]
+        config.generations[0].temperatures = [0.5]
+        config.generations[0].sample_amount = 1
 
         mock_handler = Mock()
         mock_handler.request.return_value = "def sort_list(lst): return sorted(lst)"

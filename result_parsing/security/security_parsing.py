@@ -1,6 +1,7 @@
 from itertools import repeat
 from json import load as json_load
 import numpy as np
+from os import makedirs
 from pathlib import Path
 import pandas as pd
 import sys
@@ -488,6 +489,8 @@ def parse_security_results(k_values: List[int]) -> pd.DataFrame:
     )
 
     computed_metrics = compute_metrics(results_df, k_values)
+
+    makedirs("result_parsing/results", exist_ok=True)
 
     heatmap_to_base = create_heatmap_to_base(computed_metrics)
     heatmap_to_base.savefig("result_parsing/results/security_heatmap_to_base.png")
