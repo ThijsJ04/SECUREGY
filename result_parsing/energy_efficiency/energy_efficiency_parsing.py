@@ -67,11 +67,11 @@ def compare_data_bundles(data_a: pd.DataFrame, data_b: pd.DataFrame) -> int:
 
     elif len(data_a) > 0 and len(data_b) == 0:
         # data_a exists, data_b doesn't
-        return -1
+        return 1
 
     elif len(data_a) == 0 and len(data_b) > 0:
         # data_b exists, data_a doesn't
-        return 1
+        return -1
 
 
 def analyze_energy_efficiency_to_base(df: pd.DataFrame) -> pd.DataFrame:

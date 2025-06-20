@@ -88,10 +88,6 @@ def transform_test_based_results_to_pd(
         metadata = parse_result_filename(csv_file.name)
         corresponding_csv = pd.read_csv(csv_file)
 
-        # Print all unique sections for debugging
-        unique_sections = corresponding_csv["Section"].unique()
-        print(f"Unique sections in {csv_file.name}: {unique_sections}", file=sys.stderr)
-
         filter_condition = corresponding_csv["Section"] == section_filter
         if exclude_keys:
             for key in exclude_keys:
